@@ -7,6 +7,10 @@ data_path = DIR_PATH + '/dataset'
 folder_names = os.listdir(data_path)
 
 for folder in folder_names :
+
+    if folder == 'mydata' or folder == 'resize_data' :
+        continue
+
     file_path = data_path + '/' + folder
     file_names = os.listdir(file_path)
 

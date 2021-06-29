@@ -9,7 +9,7 @@ yolo_custom_weights = DIR_PATH + "\models\yolov4-custom.weights"
 yolo_custom_cfg = DIR_PATH + "\models\yolov4-custom.cfg"
 
 # yolo 관련 설정
-my_classes = ["fresh_apple", "fresh_banana", "fresh_orange", "rotten_apple", "rotten_banana", "rotten_orange"]
+my_classes = ["apple", "bacon", "carrot", "cheese", "chicken", "eggs", "kimchi", "milk_time", "milk", "onion", "paprika", "potatoes", "rotten_apple", "shrimp"] 
 my_net = cv2.dnn.readNet(yolo_custom_weights, yolo_custom_cfg)
 colors = np.random.uniform(0, 255, size=(len(my_classes),3))
 
@@ -51,7 +51,7 @@ def yolo(frame, size, score_threshold, nms_threshold):
             confidence = scores[class_id]
 
             # 정확도가 0.75보다 크다면 bounding box를 칠한다.
-            if confidence > 0.75:
+            if confidence > 0.65:
                 # 탐지된 객체의 너비, 높이 및 중앙 좌표값 찾기
                 center_x = int(detection[0] * width)
                 center_y = int(detection[1] * height)
@@ -89,7 +89,7 @@ def yolo(frame, size, score_threshold, nms_threshold):
 
 def gen_frames() :
     
-    frame = cv2.imread(DIR_PATH + "/test_data/test.png")
+    frame = cv2.imread(DIR_PATH + "/test_data/test2.jpg")
     
     if frame is None :
         print("이미지가 없습니다.")
