@@ -24,6 +24,12 @@ pip install -r requirements.txt
 # flask 페이지 코드 실행
 python run.py
 
+# 라즈베리 OS 환경설정
+pip install pymysql # DB 구축을 위한 라이브러리
+pip install pandas
+pip install RPi.GPIO
+
+
 # 웹 페이지 구조
 1) http://127.0.0.1:5050/ 
 => index 페이지로 yolo frame 결과에 대한 출력
