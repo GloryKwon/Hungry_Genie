@@ -24,11 +24,17 @@ pip install -r requirements.txt
 # flask 페이지 코드 실행
 python run.py
 
-# 라즈베리 OS 환경설정
-pip install pymysql # DB 구축을 위한 라이브러리
-pip install pandas
-pip install RPi.GPIO
-
+# 06.29. Note
+1) 라즈베리파이 OS 환경설정
+- pymysql, RPi.GPIO, pandas 라이브러리 설치 필요(pip install pymysql ~)
+2) 이미지 인식결과 DATA 저장 구문 예시
+- conn = pymysql.connect(host = "localhost", user = "hungry_genie", passwd = "", db = "hungry_genie", charset = "utf8")
+- try: with conn.cursor() as cur: sql = "insert into DB values(~)"
+- while True: if data is not None: cur.execute(sql, DB SCHEMA) conn.commit(
+3) 냉장고 문 열림에 따른 LED 점등 구문 예시
+- import RPi.GPIO
+- def callback_func(pin): print("냉장고 문 열림 감지, LED 점등") GPIO.output(LED, HIGH)
+- GPIO.add_event_detect(pin, GPIO.FALLING, callback=callbakc_func1, bouncetime(200))
 
 # 웹 페이지 구조
 1) http://127.0.0.1:5050/ 
