@@ -3,19 +3,40 @@ from numpy.linalg import norm
 import numpy as np
 import pandas as pd
 import re
+import pymysql
 
 def cos_similarity(A, B):
        return dot(A, B)/(norm(A)*norm(B))  # cosine similarity
 
-data = pd.read_csv('C:/Users/user/Desktop/메뉴 및 재료.csv', encoding = 'cp949')  # 데이터 호출
+# DB 접속
+conn = pymysql.connect(
+       host='127.0.0.1',
+       port=3306,
+       user='root',
+       password='1234',
+       db='hungrygenie',
+       charset='utf8')
 
-ingredient = list(data['재료'])
-num_ingre = list(data['개수'])
+curs = conn.cursor()
+
+#레시피 데이터
+data = pd.read_csv('C:/Users/yooso/Desktop/Hungry_Genie/recipe.csv', encoding = 'cp949')  # 데이터 호출
 menu = list(data['메뉴'].dropna())
 need = list(data['필수재료'].dropna())
 sub = list(data['부가재료'].fillna(' '))
+recipe = list(data['레시피'].fillna(' '))
+
+#현재 냉장고 재고 쿼리
+sql_i = "select ingredient from frige"
+sql_n = "select num from frige"
+curs.execute(sql_i)
+ingredient = pd.DataFrame(curs.fetchall())[0].tolist()
+curs.execute(sql_n)
+num_ingre = pd.DataFrame(curs.fetchall())[0].tolist()
+
 impossible = {}
-cos_sim = {}
+cos_sim = []
+food = {}
 
 for i, m in enumerate(menu):
     food[m] = need[i]    # 음식과 재료 데이터
@@ -51,14 +72,17 @@ for k, v in food.items():
         having.append(0)   # vector 크기 맞춤
     
     if k in impossible:
-        cos_sim[k] = 0  # 만들 수 없으면 cos_sim = 0
+        cos_sim.append([0, k, menu.index(k)])  # 만들 수 없으면 cos_sim = 0
     else:
         for i in range(len(having)):
             if having[i] > necessary[i]: # 재료가 더 많아도 cos_sim 크기 지장 없게
                 having[i] = necessary[i]
-        cos_sim[k] = round(cos_similarity(having, necessary), 5)
+        cos_sim.append([round(cos_similarity(having, necessary), 5), k, menu.index(k)])
 
-cos_sim = sorted(cos_sim.items(), key = lambda x : x[1], reverse = True)
+cos_sim = sorted(cos_sim, key = lambda x : x[0], reverse = True)
+print("추천 레시피:" , cos_sim[0][1])
+print(recipe[cos_sim[0][2]]+"\n")
 print(cos_sim)
+print("\n불가능한 레시피")
 print(impossible)
 
