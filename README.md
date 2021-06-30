@@ -63,3 +63,60 @@ DB_INFO = {
 - import RPi.GPIO
 - def callback_func(pin): print("냉장고 문 열림 감지, LED 점등") GPIO.output(LED, HIGH)
 - GPIO.add_event_detect(pin, GPIO.FALLING, callback=callbakc_func1, bouncetime(200))
+
+
+
+# 라즈베리 OS에 필요한 라이브러리 설치(opencv, pymysql, panads)
+pip3 install opencv-python==4.1.5.48 pymysql pandas yolo
+sudo apt-get install libcblas-dev
+sudo apt-get install libhdf5-dev
+sudo apt-get install libhdf5-serial-dev
+sudo apt-get install libatlas-base-dev
+sudo apt-get install libjasper-dev 
+sudo apt-get install libqtgui4 
+sudo apt-get install libqt4-test
+
+
+# yolo 설치
+- git clone https://github.com/AlexeyAB/darknet
+- sudo nano Makefile
+  # OPENCV = 1 로 변경
+- wget https://pjreddie.com/media/files/yolov3.weights
+  --> Hungry_Genie/models에 이동, 이동 후 yolo_custom.weights으로 파일명 변경
+
+
+# MYSQL config 설정
+apt-cache search mariadb
+sudo apt-get install mariadb-server
+sudo service mysqld start
+sudo mysql -u root
+grant all privileges on *.* to 'root'@'localhost' identified by 'password';
+
+# MariaDB root, password 설정
+mysql -uroot -p
+passwd
+>MariaDB[None]
+use mysql
+>MariaDB[mysql]
+update user set password=password('passwd') where user = 'root';
+
+create database db; #데이터베이스 생성
+
+# 라즈베리 OS 가상환경 구축
+cd ~
+mkdir venv_dev # 가상환경 폴더 생성
+
+source bin/activate # 가상환경 진입
+deactivate #가상환경 탈출
+
+cd /venv_dev
+git clone https://github.com/ZooWonSEO/Hungry_Genie.git
+
+# 서버 및 영상인식 파일 실행
+cd /venv_dev/Hungry_genie
+python3 run.py
+(종료할 경우 ctrl+c)
+
+이후 인터넷 브라우저에서 127.0.0.1:5050 접속
+bash 쉘에서 HTTP GET 메시지 동작 확인
+로컬호스트에서 영상인식 동작여부 확인
