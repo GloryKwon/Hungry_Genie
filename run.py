@@ -4,7 +4,7 @@ import numpy as np
 import pymysql
 from flask import Flask, render_template, request, make_response,Response
 from cos_similarity import menu_recommend
-from config import DB_INFO
+from settings.config import DB_INFO
 
 # DB 접속
 conn = pymysql.connect(
@@ -130,7 +130,6 @@ def inventory() :
 @app.route('/recipe')
 def recipe() :
     value = menu_recommend(DIR_PATH, curs)
-    print(value)
     return render_template('recipe.html', value = value)
 
 if __name__ == '__main__' :
