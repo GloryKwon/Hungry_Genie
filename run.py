@@ -138,6 +138,24 @@ def gen_frames() :
                 b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')  
         cv2.destroyAllWindows()
 
+def get_list():
+    sql = '''
+        select * from frige
+    '''
+    curs.execute(sql)
+    row = curs.fetchall()
+    data_list = []
+    for obj in row :
+        data_dic = {
+            'name' : obj[0],
+            'cnt' : obj[1],
+          #  'time' : obj[2]
+        }
+        # 있는 재료만 저장됨
+        if data_dic['cnt'] != 0 :
+            data_list.append(data_dic)
+    return data_list
+    
 # Flask page routing
 @app.route('/')
 def home() :
@@ -149,7 +167,8 @@ def capture() :
 
 @app.route('/inventory')
 def inventory() :
-    return render_template('inventory.html')
+    food_list = get_list()
+    return render_template('inventory.html', food_list = food_list)
 
 @app.route('/recipe')
 def recipe() :
