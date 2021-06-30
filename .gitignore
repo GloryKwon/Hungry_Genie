@@ -225,3 +225,6 @@ pip-selfcheck.json
 
 #용량 문제로 ignore
 models/yolov4-custom.weights
+
+#보안 문제
+settings/
