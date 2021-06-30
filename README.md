@@ -38,8 +38,19 @@ python run.py
 # 주의사항
 경로에 한글 포함 시 오류 발생할 수 있음
 
-# MYSQL config
-config.py의 password 본인걸로 설정할 것!
+# MYSQL config 설정
+1) settings라는 폴더를 만든다.
+2) settings안에 config.py를 만든다.
+3) config.py에
+DB_INFO = {
+    'host':'0.0.0.0',
+    'port':3306,
+    'user':'user',
+    'password':'password',
+    'db':'db',
+    'charset':'utf8',
+}
+로 설정
 
 # 06.29. Note
 1) 라즈베리파이 OS 환경설정
