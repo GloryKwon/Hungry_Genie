@@ -1,7 +1,20 @@
 import os
 import cv2
 import numpy as np
+import pymysql
 from flask import Flask, render_template, request, make_response,Response
+from cos_similarity import menu_recommend
+
+# DB 접속
+conn = pymysql.connect(
+       host='127.0.0.1',
+       port=3306,
+       user='root',
+       password='1234',
+       db='hungrygenie',
+       charset='utf8')
+
+curs = conn.cursor()
 
 # 경로 설정
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
@@ -118,7 +131,8 @@ def inventory() :
 
 @app.route('/recipe')
 def recipe() :
-    return render_template('recipe.html')
+    value = menu_recommend(DIR_PATH, curs)
+    return render_template('recipe.html', value = value)
 
 if __name__ == '__main__' :
     app.run(host='127.0.0.1', port=5050, debug=True)
