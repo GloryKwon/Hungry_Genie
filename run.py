@@ -31,6 +31,11 @@ app = Flask(__name__)
 
 # yolo 결과를 토대로 db data update
 def update_db(data_dict) :
+
+    sql = f"update frige set num = 0"
+    curs.execute(sql)
+    conn.commit()
+
     for ingred in data_dict.keys() :   
         ch_ingredient = ingredient[ingred]
         ch_num = data_dict[ingred]
@@ -124,7 +129,7 @@ def yolo(frame, size, score_threshold, nms_threshold, dir_path):
 
 def gen_frames() :
     
-    frame = cv2.imread(DIR_PATH + "/test_data/test.jpg")
+    frame = cv2.imread(DIR_PATH + "/test_data/test2.jpg")
     
     if frame is None :
         print("이미지가 없습니다.")
