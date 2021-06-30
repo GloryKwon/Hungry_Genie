@@ -18,15 +18,17 @@ print(conn)
 
 curs = conn.cursor()
 
+# 경로 설정
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+
 # Flask App 생성
 app = Flask(__name__)
 
-def yolo(frame, size, score_threshold, nms_threshold):
+def yolo(frame, size, score_threshold, nms_threshold, dir_path):
 
     # 경로 설정
-    DIR_PATH = os.path.dirname(os.path.realpath(__file__))    
-    yolo_custom_weights = DIR_PATH + "\models\yolov4-custom.weights"
-    yolo_custom_cfg = DIR_PATH + "\models\yolov4-custom.cfg"
+    yolo_custom_weights = dir_path + "\models\yolov4-custom.weights"
+    yolo_custom_cfg = dir_path + "\models\yolov4-custom.cfg"
 
     # yolo 관련 설정
     classes = ["apple", "bacon", "carrot", "cheese", "chicken", "egg", "kimchi", "milk", "onion", "paprika", "potato", "rotten_apple", "shrimp"]
@@ -98,14 +100,13 @@ def yolo(frame, size, score_threshold, nms_threshold):
 
 def gen_frames() :
     
-    DIR_PATH = os.path.dirname(os.path.realpath(__file__))
     frame = cv2.imread(DIR_PATH + "/test_data/test.jpg")
     
     if frame is None :
         print("이미지가 없습니다.")
     
     else :
-        frame = yolo(frame=frame, size=416, score_threshold=0.45, nms_threshold=0.4)
+        frame = yolo(frame=frame, size=416, score_threshold=0.45, nms_threshold=0.4, dir_path=DIR_PATH)
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         # concat frame one by one and show result
@@ -129,6 +130,7 @@ def inventory() :
 @app.route('/recipe')
 def recipe() :
     value = menu_recommend(DIR_PATH, curs)
+    print(value)
     return render_template('recipe.html', value = value)
 
 if __name__ == '__main__' :
