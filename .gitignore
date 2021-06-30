@@ -222,3 +222,6 @@ pyvenv.cfg
 pip-selfcheck.json
 
 # End of https://www.toptal.com/developers/gitignore/api/python,flask,venv
+
+#용량 문제로 ignore
+models/yolov4-custom.weights

@@ -49,8 +49,8 @@
         <header class="bg-dark py-4">
             <div class="container px-4 px-lg-5 my-5">
                 <div class="text-center text-white">
-                    <h1 class="display-4 fw-bolder">닭고기 레시피</h1>
-                    <p class="lead fw-normal text-white-50 mb-0">닭고기로 만들 수 있는 맛있는 음식들</p>
+                    <h1 class="display-4 fw-bolder">추천 레시피</h1>
+                    <p class="lead fw-normal text-white-50 mb-0">우리 집 냉장고 재료로 만들 수 있는 맛있는 음식들</p>
                 </div>
             </div>
         </header>
@@ -72,11 +72,16 @@
                 <div class="col-lg-8">
                     <!-- Featured blog post-->
                     <div class="card mb-4">
-                        <a href="#!"><img class="card-img-top" src="{{ url_for('static', filename='assets/chicken_breast.jpg')}}" height=350 alt="..." /></a>
+                        <a href="#!"><img class="card-img-top" src="{{ url_for('static', filename=value[2])}}" height=350 alt="..." /></a>
                         <div class="card-body">
                             <div class="small text-muted">조리시간 20분</div>
-                            <h2 class="card-title">닭볶음탕</h2>
-                            <p class="card-text">필요 재료 : 닭, 감자, 양파, 당근, 고추장, 마늘, 대파</p>
+                            <h2 class="card-title">{{value[0]}}</h2>
+                            {% if value[3]==0 %}
+                            <p>모든 재료가 준비되어있어요!</p>
+                            {% else %}
+                            <p>"{{value[3]}}"이 부족해요</p>
+                            {% endif %}
+                            <p class="card-text">{{value[1]}}</p>
                             <a class="btn btn-primary" href="#!">Read more →</a>
                         </div>
                     </div>
