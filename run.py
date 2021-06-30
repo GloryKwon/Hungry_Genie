@@ -4,39 +4,37 @@ import numpy as np
 import pymysql
 from flask import Flask, render_template, request, make_response,Response
 from cos_similarity import menu_recommend
+from config import DB_INFO
 
 # DB 접속
 conn = pymysql.connect(
-       host='127.0.0.1',
-       port=3306,
-       user='root',
-       password='1234',
-       db='hungrygenie',
-       charset='utf8')
+       host=DB_INFO['host'],
+       port=DB_INFO['port'],
+       user=DB_INFO['user'],
+       password=DB_INFO['password'],
+       db=DB_INFO['db'],
+       charset=DB_INFO['charset'])
+print(conn)
 
 curs = conn.cursor()
 
 # 경로 설정
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
-yolo_custom_weights = DIR_PATH + "\models\yolov4-custom.weights"
-yolo_custom_cfg = DIR_PATH + "\models\yolov4-custom.cfg"
-
-# yolo 관련 설정
-my_classes = ["apple", "bacon", "carrot", "cheese", "chicken", "eggs", "kimchi", "milk_time", "milk", "onion", "paprika", "potatoes", "rotten_apple", "shrimp"] 
-my_net = cv2.dnn.readNet(yolo_custom_weights, yolo_custom_cfg)
-colors = np.random.uniform(0, 255, size=(len(my_classes),3))
 
 # Flask App 생성
 app = Flask(__name__)
 
-def yolo(frame, size, score_threshold, nms_threshold):
+def yolo(frame, size, score_threshold, nms_threshold, dir_path):
 
-    global abnormal
-    # 네트워크 지정
+    # 경로 설정
+    yolo_custom_weights = dir_path + "\models\yolov4-custom.weights"
+    yolo_custom_cfg = dir_path + "\models\yolov4-custom.cfg"
+
+    # yolo 관련 설정
+    classes = ["apple", "bacon", "carrot", "cheese", "chicken", "egg", "kimchi", "milk", "onion", "paprika", "potato", "rotten_apple", "shrimp"]
+    net = cv2.dnn.readNet(yolo_custom_weights, yolo_custom_cfg)
+    colors = np.random.uniform(0, 255, size=(len(classes),3))
     
-    net = my_net
-    classes = my_classes
-
     layer_names = net.getLayerNames()
     output_layers = [layer_names[i[0] - 1] for i in net.getUnconnectedOutLayers()]
 
@@ -64,7 +62,7 @@ def yolo(frame, size, score_threshold, nms_threshold):
             confidence = scores[class_id]
 
             # 정확도가 0.75보다 크다면 bounding box를 칠한다.
-            if confidence > 0.65:
+            if confidence > 0.45:
                 # 탐지된 객체의 너비, 높이 및 중앙 좌표값 찾기
                 center_x = int(detection[0] * width)
                 center_y = int(detection[1] * height)
@@ -102,13 +100,13 @@ def yolo(frame, size, score_threshold, nms_threshold):
 
 def gen_frames() :
     
-    frame = cv2.imread(DIR_PATH + "/test_data/test2.jpg")
+    frame = cv2.imread(DIR_PATH + "/test_data/test.jpg")
     
     if frame is None :
         print("이미지가 없습니다.")
     
     else :
-        frame = yolo(frame=frame, size=416, score_threshold=0.45, nms_threshold=0.4)
+        frame = yolo(frame=frame, size=416, score_threshold=0.45, nms_threshold=0.4, dir_path=DIR_PATH)
         ret, buffer = cv2.imencode('.jpg', frame)
         frame = buffer.tobytes()
         # concat frame one by one and show result
@@ -132,6 +130,7 @@ def inventory() :
 @app.route('/recipe')
 def recipe() :
     value = menu_recommend(DIR_PATH, curs)
+    print(value)
     return render_template('recipe.html', value = value)
 
 if __name__ == '__main__' :
