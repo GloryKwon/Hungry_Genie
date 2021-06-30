@@ -14,16 +14,31 @@ conn = pymysql.connect(
        password=DB_INFO['password'],
        db=DB_INFO['db'],
        charset=DB_INFO['charset'])
-print(conn)
 
 curs = conn.cursor()
 
 # 경로 설정
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
+# DB mapping dict
+ingredient = {
+    'apple':'사과', 'bacon':'베이컨', 'carrot':'당근', 'cheese':'치즈', 'chicken':'닭고기', 'egg':'계란',
+    'kimchi':'배추김치', 'milk':'우유', 'onion':'양파', 'paprika':'파프리카','potato':'감자', 'rotten_apple':'상한사과', 'shrimp':'새우'
+}
+
 # Flask App 생성
 app = Flask(__name__)
 
+# yolo 결과를 토대로 db data update
+def update_db(data_dict) :
+    for ingred in data_dict.keys() :   
+        ch_ingredient = ingredient[ingred]
+        ch_num = data_dict[ingred]
+        sql = f"update frige set num = '{ch_num}' where ingredient = '{ch_ingredient}'"
+        curs.execute(sql)
+        conn.commit()
+
+# image yolo 모델 통과
 def yolo(frame, size, score_threshold, nms_threshold, dir_path):
 
     # 경로 설정
@@ -54,6 +69,7 @@ def yolo(frame, size, score_threshold, nms_threshold, dir_path):
     class_ids = []
     confidences = []
     boxes = []
+    class_dict = {}
 
     for out in outs:
         for detection in out:
@@ -94,8 +110,16 @@ def yolo(frame, size, score_threshold, nms_threshold, dir_path):
             cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
             cv2.rectangle(frame, (x - 1, y), (x + len(class_name) * 13 + 80, y - 25), color, -1)
             cv2.putText(frame, label, (x, y - 8), cv2.FONT_HERSHEY_COMPLEX_SMALL, 1, (255, 255, 255), 2)
-            print(class_name)
+            
+            if class_name == 'rotten_apple' :
+                continue
 
+            if class_name not in class_dict.keys() :
+                class_dict[class_name] = 1
+            else :
+                class_dict[class_name] += 1
+
+    update_db(class_dict)
     return frame
 
 def gen_frames() :
