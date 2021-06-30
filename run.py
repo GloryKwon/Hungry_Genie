@@ -130,7 +130,6 @@ def inventory() :
 @app.route('/recipe')
 def recipe() :
     value = menu_recommend(DIR_PATH, curs)
-    print(value)
     return render_template('recipe.html', value = value)
 
 if __name__ == '__main__' :
